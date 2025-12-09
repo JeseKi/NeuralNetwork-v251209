@@ -21,7 +21,10 @@ OUTPUT: List[np.ndarray] = [
     np.array([[0]]),
 ]
 
-neural_network = NeuralNetwork()
+neural_network = NeuralNetwork(learning_rate=10e-2)
+neural_network.add_layer(
+    NeuralModule(input_size=2, output_size=2, activation_type=ActivationType.LINEAR)
+)
 neural_network.add_layer(
     NeuralModule(input_size=2, output_size=2, activation_type=ActivationType.SIGMOID)
 )
@@ -34,10 +37,12 @@ train(
     inputs=INPUT,
     targets=OUTPUT,
     loss_type=LossType.MSE,
-    epochs=1000000,
-    record_interval=10000,
+    epochs=10000,
+    record_interval=100,
 )
 
 for input, target in zip(INPUT, OUTPUT):
     output = neural_network.forward(input)
     print(f"Input: {input}, Target: {target}, Output: {output}")
+
+print("branch: dev")
