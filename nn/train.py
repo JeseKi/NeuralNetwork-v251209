@@ -36,7 +36,7 @@ def backward(
 
         grad_last_layer = grad_current_layer
         # weight delta
-        if reversed_current_layer_index + 1== len(neural_network.layers):
+        if reversed_current_layer_index + 1 == len(neural_network.layers):
             _input = input.copy()
         else:
             _input = output[-(reversed_current_layer_index + 2)]
