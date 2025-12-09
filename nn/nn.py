@@ -1,10 +1,17 @@
 from typing import List
+from enum import StrEnum
 
 import numpy as np
 from numpy.random import Generator
 from numpy import random
 
 from nn.activation import ActivationType, activation
+
+
+class InitType(StrEnum):
+    XAVIER_UNIFORM = "xavier_uniform"
+    HE_UNIFORM = "he_uniform"
+    RANDOM_UNIFORM = "random_uniform"
 
 
 class NeuralModule:
@@ -14,6 +21,7 @@ class NeuralModule:
         output_size: int,
         activation_type: ActivationType,
         seed: int = 42,
+        init_type: InitType = InitType.XAVIER_UNIFORM,
     ) -> None:
         """
         Initialize a neural layer.
@@ -22,17 +30,39 @@ class NeuralModule:
             output_size: The number of output features that the layer produces.
             activation_type: The activation function to use.
             seed: The seed for the random number generator.
+            init_type: Weight initialization strategy.
         """
         self.rng: Generator = random.default_rng(seed)
         self.activation_type: ActivationType = activation_type
         self.input_size: int = input_size
         self.output_size: int = output_size
+        self.W, self.bias = self._initialize_parameters(init_type)
 
-        limit = np.sqrt(6 / (input_size + output_size))
-        self.W: np.ndarray = self.rng.uniform(
-            size=(input_size, output_size), low=-limit, high=limit
-        )
-        self.bias: np.ndarray = np.zeros((1, output_size))
+    def _initialize_parameters(
+        self, init_type: InitType
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """
+        Initialize weights and bias according to the given strategy.
+        Returns:
+            A tuple of (weights, bias).
+        """
+        if init_type == InitType.XAVIER_UNIFORM:
+            limit = np.sqrt(6 / (self.input_size + self.output_size))
+            W = self.rng.uniform(
+                size=(self.input_size, self.output_size), low=-limit, high=limit
+            )
+        elif init_type == InitType.HE_UNIFORM:
+            limit = np.sqrt(6 / self.input_size)
+            W = self.rng.uniform(
+                size=(self.input_size, self.output_size), low=-limit, high=limit
+            )
+        else:  # InitType.RANDOM_UNIFORM
+            W = self.rng.uniform(
+                size=(self.input_size, self.output_size), low=-1.0, high=1.0
+            )
+
+        bias = np.zeros((1, self.output_size))
+        return W, bias
 
     def forward(self, input: np.ndarray) -> np.ndarray:
         return activation(self.activation_type, input @ self.W + self.bias)
