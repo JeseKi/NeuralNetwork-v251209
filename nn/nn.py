@@ -28,10 +28,11 @@ class NeuralModule:
         self.input_size: int = input_size
         self.output_size: int = output_size
 
+        limit = np.sqrt(6 / (input_size + output_size))
         self.W: np.ndarray = self.rng.uniform(
-            size=(input_size, output_size), low=-1, high=1
+            size=(input_size, output_size), low=-limit, high=limit
         )
-        self.bias: np.ndarray = self.rng.uniform(size=(1, output_size), low=-1, high=1)
+        self.bias: np.ndarray = np.zeros((1, output_size))
 
     def forward(self, input: np.ndarray) -> np.ndarray:
         return activation(self.activation_type, input @ self.W + self.bias)
