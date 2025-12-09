@@ -1,0 +1,24 @@
+[project]
+name = "nn"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "JeseKi",email = "2094901072@qq.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "uv (>=0.9.16,<0.10.0)",
+    "ruff (>=0.14.8,<0.15.0)",
+    "mypy (>=1.19.0,<2.0.0)",
+    "numpy (>=2.3.5,<3.0.0)",
+    "pip-tools (>=7.5.2,<8.0.0)",
+    "tqdm (>=4.67.1,<5.0.0)",
+    "types-tqdm (>=4.67.0.20250809,<5.0.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
