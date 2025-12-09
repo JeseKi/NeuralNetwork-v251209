@@ -1,6 +1,6 @@
 [project]
 name = "nn"
-version = "0.2.1"
+version = "0.2.2"
 description = ""
 authors = [
     {name = "JeseKi",email = "2094901072@qq.com"}
@@ -15,7 +15,8 @@ dependencies = [
     "numpy (>=2.3.5,<3.0.0)",
     "pip-tools (>=7.5.2,<8.0.0)",
     "tqdm (>=4.67.1,<5.0.0)",
-    "types-tqdm (>=4.67.0.20250809,<5.0.0.0)"
+    "types-tqdm (>=4.67.0.20250809,<5.0.0.0)",
+    "scikit-learn (>=1.7.2,<2.0.0)"
 ]
 
 
