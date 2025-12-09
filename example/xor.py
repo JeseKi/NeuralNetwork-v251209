@@ -44,5 +44,3 @@ train(
 for input, target in zip(INPUT, OUTPUT):
     output = neural_network.forward(input)
     print(f"Input: {input}, Target: {target}, Output: {output}")
-
-print("branch: dev")
