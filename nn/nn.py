@@ -1,4 +1,6 @@
+from pathlib import Path
 from typing import List
+import pickle
 from enum import StrEnum
 
 import numpy as np
@@ -93,3 +95,22 @@ class NeuralNetwork:
 
     def add_layer(self, layer: NeuralModule) -> None:
         self.layers.append(layer)
+
+    def save_model(self, path: str | Path) -> None:
+        """
+        Save the model to a file.
+        Args:
+            path: The path to save the model.
+        """
+        with open(path, "wb") as f:
+            pickle.dump(self, f)
+
+    @classmethod
+    def load_model(cls, path: str | Path) -> "NeuralNetwork":
+        """
+        Load the model from a file.
+        Args:
+            path: The path to load the model.
+        """
+        with open(path, "rb") as f:
+            return pickle.load(f)
