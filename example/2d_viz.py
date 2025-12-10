@@ -56,5 +56,3 @@ for input_value, target in zip(X_test_list, y_test_list):
 
 test_loss_average = total_loss / len(X_test_list)
 print(f"test_loss_average: {test_loss_average}")
-
-neural_network.save_model("neural_network.pkl")
