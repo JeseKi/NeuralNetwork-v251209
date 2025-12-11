@@ -22,9 +22,7 @@ def backward(
     reversed_current_layer_index = 0
 
     for layer, h in zip(reversed(neural_network.layers), reversed(output)):
-        grad_h = derivative(
-            neural_network.layers[-reversed_current_layer_index].activation_type, h
-        )
+        grad_h = derivative(layer.activation_type, h)
 
         # output layer delta
         if reversed_current_layer_index == 0:
