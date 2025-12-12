@@ -25,16 +25,16 @@ assert isinstance(y_test, np.ndarray)
 
 neural_network = NeuralNetwork(learning_rate=10e-4)
 neural_network.add_layer(
-    NeuralModule(input_size=2, output_size=32, activation_type=ActivationType.LINEAR)
+    NeuralModule(input_size=2, output_size=4, activation_type=ActivationType.LINEAR)
 )
 neural_network.add_layer(
-    NeuralModule(input_size=32, output_size=32, activation_type=ActivationType.SIGMOID)
+    NeuralModule(input_size=4, output_size=4, activation_type=ActivationType.LEAKY_RELU)
 )
 neural_network.add_layer(
-    NeuralModule(input_size=32, output_size=32, activation_type=ActivationType.SIGMOID)
+    NeuralModule(input_size=4, output_size=4, activation_type=ActivationType.LEAKY_RELU)
 )
 neural_network.add_layer(
-    NeuralModule(input_size=32, output_size=1, activation_type=ActivationType.SIGMOID)
+    NeuralModule(input_size=4, output_size=1, activation_type=ActivationType.SIGMOID)
 )
 
 X_list = [X[i].reshape(1, -1) for i in range(X.shape[0])]
@@ -49,8 +49,8 @@ if ENABLE_TRAIN:
         inputs=X_list,
         targets=y_list,
         loss_type=LossType.BCE,
-        epochs=250,
-        record_interval=10,
+        epochs=30,
+        record_interval=1,
     )
 else:
     neural_network = NeuralNetwork.load_model("moons.pkl")
