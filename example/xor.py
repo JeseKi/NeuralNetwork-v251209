@@ -36,7 +36,7 @@ train(
     neural_network=neural_network,
     inputs=INPUT,
     targets=OUTPUT,
-    loss_type=LossType.MSE,
+    loss_type=LossType.BCE,
     epochs=10000,
     record_interval=100,
 )
