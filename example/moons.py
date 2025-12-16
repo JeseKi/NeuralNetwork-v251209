@@ -266,6 +266,108 @@ def visualize_results(
     fig.show()
 
 
+def visualize_layer_activations(
+    neural_network: NeuralNetwork,
+    X: np.ndarray,
+    grid_size: int = 100,
+    margin_ratio: float = 0.1,
+):
+    """
+    Visualize the activation functions learned by the hidden and output layers.
+    Generates heatmaps for each neuron in each layer.
+    """
+    # 1. Create Meshgrid
+    x_min, x_max = float(np.min(X[:, 0])), float(np.max(X[:, 0]))
+    y_min, y_max = float(np.min(X[:, 1])), float(np.max(X[:, 1]))
+    x_span = x_max - x_min
+    y_span = y_max - y_min
+    x_range = np.linspace(
+        x_min - x_span * margin_ratio, x_max + x_span * margin_ratio, grid_size
+    )
+    y_range = np.linspace(
+        y_min - y_span * margin_ratio, y_max + y_span * margin_ratio, grid_size
+    )
+    grid_x, grid_y = np.meshgrid(x_range, y_range)
+
+    # 2. Forward pass with all grid points (Batch processing)
+    # Shape: (N_grid_points, 2)
+    grid_points = np.stack([grid_x.ravel(), grid_y.ravel()], axis=1)
+
+    # Network forward (assuming implementation supports batch broadcasting)
+    # If not supported, we might need a loop, but numpy usually handles this.
+    try:
+        all_outputs = neural_network.forward(grid_points)
+    except ValueError:
+        # Fallback for manual batching if needed
+        outputs_list = [neural_network.forward(p.reshape(1, -1)) for p in grid_points]
+        # Transpose/Stack to get format: List[Layer_Outputs(N, Features)]
+        num_layers = len(outputs_list[0])
+        all_outputs = []
+        for l_idx in range(num_layers):
+            layer_out = np.vstack([out[l_idx] for out in outputs_list])
+            all_outputs.append(layer_out)
+
+    # 3. Plotting
+    # We want to visualize outputs of:
+    # Layer 1 (2->4), Layer 2 (4->4), Layer 3 (4->4), Layer 4 (4->1)
+    # Let's visualize Layer 2, Layer 3, and Output (Layer 4)
+    # Because Layer 1 is Linear, it's just planes. Layer 2/3 have LeakyRelu.
+
+    layers_to_show = [0, 1, 2, 3]  # Indices of layers in the output list
+    layer_names = [
+        "L1 (Linear)",
+        "L2 (LeakyReLU)",
+        "L3 (LeakyReLU)",
+        "Output (Sigmoid)",
+    ]
+
+    # Calculate rows needed
+    # L1: 4 neurons, L2: 4 neurons, L3: 4 neurons, L4: 1 neuron
+    rows = len(layers_to_show)
+    cols = 4  # Max neurons to show per row
+
+    fig = make_subplots(
+        rows=rows,
+        cols=cols,
+        subplot_titles=[
+            f"{name} - Neuron {i + 1}" for name in layer_names for i in range(cols)
+        ],
+        vertical_spacing=0.05,
+        horizontal_spacing=0.02,
+    )
+
+    for row_idx, layer_idx in enumerate(layers_to_show):
+        layer_output = all_outputs[layer_idx]  # Shape: (N_grid, n_neurons)
+        n_neurons = layer_output.shape[1]
+
+        for col_idx in range(n_neurons):
+            if col_idx >= cols:
+                break  # Limit max columns
+
+            activation_map = layer_output[:, col_idx].reshape(grid_x.shape)
+
+            fig.add_trace(
+                go.Heatmap(
+                    z=activation_map,
+                    x=x_range,
+                    y=y_range,
+                    colorscale="Viridis",
+                    showscale=False,
+                    name=f"L{layer_idx + 1}-N{col_idx + 1}",
+                ),
+                row=row_idx + 1,
+                col=col_idx + 1,
+            )
+
+    fig.update_layout(
+        title="<b>Neural Network Layer Activations</b><br>Visualizing how the input space is transformed layer by layer",
+        height=300 * rows,
+        width=1200,
+        showlegend=False,
+    )
+    fig.show()
+
+
 def main():
     """Main function to orchestrate the workflow."""
     # constants
@@ -277,6 +379,9 @@ def main():
     DECISION_BOUNDARY_MARGIN_RATIO = (
         0.08  # the margin ratio of the decision boundary (relative to x/y span)
     )
+
+    # New flag for layer visualization
+    ENABLE_LAYER_VIS = False
 
     # Create datasets
     X, y, X_test, y_test = create_datasets()
@@ -314,6 +419,10 @@ def main():
             decision_boundary_grid_size=DECISION_BOUNDARY_GRID_SIZE,
             decision_boundary_margin_ratio=DECISION_BOUNDARY_MARGIN_RATIO,
         )
+
+    if ENABLE_LAYER_VIS:
+        print("Visualizing layer activations...")
+        visualize_layer_activations(neural_network, X)
 
 
 if __name__ == "__main__":
