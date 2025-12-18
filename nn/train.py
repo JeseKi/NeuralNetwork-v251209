@@ -27,7 +27,11 @@ def backward(
             # if is Softmax + CCE, loss function gradient has been simplified to (y_pred - y)
             # so we don't need to multiply the Softmax derivative
             from nn.activation import ActivationType
-            if layer.activation_type == ActivationType.SOFTMAX and loss_type == LossType.CCE:
+
+            if (
+                layer.activation_type == ActivationType.SOFTMAX
+                and loss_type == LossType.CCE
+            ):
                 grad_current_layer = grad_loss
             else:
                 # other cases still need to multiply the activation function derivative
