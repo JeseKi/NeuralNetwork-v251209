@@ -22,14 +22,21 @@ def backward(
     reversed_current_layer_index = 0
 
     for layer, h in zip(reversed(neural_network.layers), reversed(output)):
-        grad_h = derivative(layer.activation_type, h)
-
         # output layer delta
         if reversed_current_layer_index == 0:
-            grad_current_layer = grad_loss * grad_h
+            # if is Softmax + CCE, loss function gradient has been simplified to (y_pred - y)
+            # so we don't need to multiply the Softmax derivative
+            from nn.activation import ActivationType
+            if layer.activation_type == ActivationType.SOFTMAX and loss_type == LossType.CCE:
+                grad_current_layer = grad_loss
+            else:
+                # other cases still need to multiply the activation function derivative
+                grad_h = derivative(layer.activation_type, h)
+                grad_current_layer = grad_loss * grad_h
         # hidden layer delta
         else:
             assert last_layer_W is not None, "Last layer weight is not set"
+            grad_h = derivative(layer.activation_type, h)
             grad_current_layer = (grad_last_layer @ last_layer_W.T) * grad_h
 
         grad_last_layer = grad_current_layer
