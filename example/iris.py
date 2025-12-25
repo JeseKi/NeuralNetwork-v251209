@@ -1,8 +1,8 @@
 from typing import List, Tuple
 
 import numpy as np
-import plotly.graph_objects as go # type: ignore
-from plotly.subplots import make_subplots # type: ignore
+import plotly.graph_objects as go  # type: ignore
+from plotly.subplots import make_subplots  # type: ignore
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.utils import Bunch
@@ -166,8 +166,8 @@ def visualize_results(
     Z = np.zeros(xx.size)
     for i in range(X_grid.shape[0]):
         output = neural_network.forward(X_grid[i].reshape(1, -1))
-        Z[i] = np.argmax(output[-1]) # type: ignore
-    Z = Z.reshape(xx.shape) # type: ignore
+        Z[i] = np.argmax(output[-1])  # type: ignore
+    Z = Z.reshape(xx.shape)  # type: ignore
 
     fig = make_subplots(
         rows=1,
